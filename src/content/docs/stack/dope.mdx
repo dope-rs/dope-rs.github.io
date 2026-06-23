@@ -1,0 +1,27 @@
+---
+title: dope — the runtime
+description: The manifold runtime. Thread-per-core async, io_uring-first, shared-nothing by construction.
+sidebar:
+  order: 1
+---
+
+import ThreadPerCore from '../../../components/ThreadPerCore.astro';
+
+> **狂**: wild
+
+`dope` is the foundation: a thread-per-core async runtime built on **`io_uring`**.
+Each core runs one fully independent, single-threaded executor — one driver, one
+connection slab, one waker arena, no shared state. Everything else stands on it.
+
+<ThreadPerCore />
+
+## io_uring first
+
+The backend is `io_uring` and the runtime is shaped to it — submit, complete, batch.
+`kqueue` is an unoptimized dev stand-in for macOS, [not a second target](/philosophy/intro/).
+
+## Programming it
+
+A [Manifold](/concepts/manifold/) is the per-core state machine the runtime drives; a
+[Fiber](/concepts/fiber/) is the `async / await` layer on top. Both obey
+[the four features](/philosophy/features/), like everything in the stack.

@@ -1,0 +1,55 @@
+---
+title: Manifold
+description: dope's long-lived, per-core state machine — mounted once, driven by kernel completions.
+sidebar:
+  order: 1
+---
+
+import ManifoldLifetime from '../../../components/ManifoldLifetime.astro';
+
+A **Manifold** is the long-lived, per-core state machine the runtime drives with
+completions straight from `io_uring` (or `kqueue` in dev) — the runtime is named after
+it. It's mounted once and lives for the whole executor: instead of spawning machinery
+per request, you put durable per-core work — a listener, a database connection, a
+timer — in a manifold and let the executor feed it kernel events until the program
+exits.
+
+<ManifoldLifetime />
+
+## The trait
+
+```rust
+pub trait Manifold: Sized {
+    const ID: u8 = 0;
+    fn dispatch(
+        self: Pin<&mut Self>,
+        ev: backend::Event,
+        driver: &mut Driver,
+    );
+    fn idle(self: Pin<&Self>) -> Idle { Idle::Park(None) }
+    // pre_park, on_wake, on_shutdown …
+}
+```
+
+- Completions go straight from the kernel to the manifold — no queue between threads.
+- `const ID` routes through a generated `match`, not a vtable — the
+  [no-dyn feature](/philosophy/features/) in practice.
+- `Pin<&mut Self>` — manifolds are in-place machines, not values shuffled around.
+
+## Composing on a core
+
+Several manifolds compose through `#[derive(Dispatcher)]`:
+
+```rust
+#[derive(Dispatcher)]
+struct App {
+    #[manifold] http: Listener</* … */>,
+    #[manifold] db:   Connector</* … */>,
+}
+```
+
+Each field is a concrete type; the derive generates dispatch and wake as `match` arms
+over the `ID`s. dope ships the common ones — `listener`, `connector` — so
+[cartel](/stack/cartel/) and [sark](/stack/sark/) build straight on them.
+
+For ordinary `async / await`, reach for the [Fiber](/concepts/fiber/).

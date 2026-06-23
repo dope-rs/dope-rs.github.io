@@ -1,0 +1,87 @@
+---
+// tent's compile-time pipeline: a .tent file is expanded by the load_html_body!
+// macro into Rust that writes bytes into an o3 buffer — no runtime parse.
+const stages = [
+  { label: 'index.tent', note: 'source' },
+  { label: 'load_html_body!', note: 'macro · compile time', hot: true },
+  { label: 'generated Rust', note: '' },
+  { label: 'o3 buffer', note: '' },
+  { label: 'bytes', note: 'response body' },
+];
+---
+
+<figure class="tent-pipe">
+  <div class="tp-flow">
+    {stages.map((s, i) => (
+      <>
+        {i > 0 && <span class="tp-arrow" aria-hidden="true">→</span>}
+        <div class:list={['tp-stage', { hot: s.hot }]}>
+          <span class="tp-label">{s.label}</span>
+          {s.note && <span class="tp-note">{s.note}</span>}
+        </div>
+      </>
+    ))}
+  </div>
+  <figcaption>captures the locals it names · <b>no runtime parse</b></figcaption>
+</figure>
+
+<style>
+  .tent-pipe {
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+  }
+
+  .tp-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .tp-flow > * { margin-top: 0; }
+
+  .tp-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.2rem;
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    background: var(--sl-color-bg);
+    text-align: center;
+  }
+  .tp-stage.hot {
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--sl-color-hairline-shade));
+    background: var(--sl-color-gray-7);
+  }
+
+  .tp-label {
+    font-size: 0.82rem;
+    color: var(--sl-color-white);
+  }
+  .tp-stage.hot .tp-label { color: var(--accent); font-weight: 600; }
+
+  .tp-note {
+    font-size: 0.66rem;
+    color: var(--sl-color-gray-4);
+  }
+
+  .tp-arrow {
+    align-self: center;
+    color: var(--accent);
+    font-size: 0.9rem;
+  }
+
+  .tent-pipe figcaption {
+    text-align: center;
+    font-size: 0.74rem;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.7rem;
+  }
+  .tent-pipe figcaption b { color: var(--sl-color-white); font-weight: 600; }
+
+  @media (max-width: 40rem) {
+    .tp-arrow { transform: rotate(90deg); }
+  }
+</style>

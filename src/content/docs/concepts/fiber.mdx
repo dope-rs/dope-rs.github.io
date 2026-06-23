@@ -1,0 +1,33 @@
+---
+title: Fiber
+description: dope's async/await layer — branded to one core, never Send.
+sidebar:
+  order: 2
+---
+
+import FiberFlow from '../../../components/FiberFlow.astro';
+
+A **Fiber** is dope's async task. You write an ordinary `async fn`; the runtime runs
+it as a Fiber on one core. That's the whole idea — it's the `async / await` layer over
+the [Manifold](/concepts/manifold/) event machinery.
+
+<FiberFlow />
+
+Every fiber is branded to the core it was created on. You can't send it to another
+thread — not by convention, by the type system. "Don't move this across threads" is a
+compile error, not a code-review note. So fiber futures carry no `Send` bound; they
+don't need one, and adding one would be a lie about how they run.
+
+Day-to-day async code lives here: `Connector` / `Listener` front-ends, `Io` / `Sleep`,
+combinators, a `Holding` handle to a manifold-owned resource. The wakers behind it are
+the runtime's `Cell`-based pointers — no atomic wakers, because a fiber is only ever
+woken on its own core.
+
+| | [Manifold](/concepts/manifold/) | Fiber |
+|---|---|---|
+| level | event state machine | `async / await` |
+| you write | a machine over `Event`s | ordinary `async fn` |
+| crosses threads | never | never (enforced by the brand) |
+
+Most application code — including the handlers you write in [sark](/stack/sark/) — is
+fibers. Manifolds are the substrate they run on.

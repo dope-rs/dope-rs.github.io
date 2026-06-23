@@ -1,0 +1,63 @@
+---
+// A fiber: you write an ordinary async fn; the runtime runs it as a Fiber, branded
+// to one core, never crossing a thread.
+---
+
+<figure class="ff">
+  <div class="ff-flow">
+    <div class="ff-stage">
+      <span class="ff-label">your <code>async fn</code></span>
+    </div>
+    <span class="ff-arrow" aria-hidden="true">→</span>
+    <div class="ff-stage hot">
+      <span class="ff-label">Fiber</span>
+      <span class="ff-note">branded to one core</span>
+    </div>
+    <span class="ff-arrow" aria-hidden="true">→</span>
+    <div class="ff-stage">
+      <span class="ff-label">one core</span>
+      <span class="ff-note">never leaves it</span>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .ff {
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+  }
+  .ff-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  .ff-flow > * { margin-top: 0; }
+
+  .ff-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.2rem;
+    text-align: center;
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    background: var(--sl-color-bg);
+  }
+  .ff-stage.hot {
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--sl-color-hairline-shade));
+    background: var(--sl-color-gray-7);
+  }
+  .ff-label { font-size: 0.84rem; color: var(--sl-color-white); }
+  .ff-label code { background: none; border: none; padding: 0; font-size: 1em; }
+  .ff-stage.hot .ff-label { color: var(--accent); font-weight: 600; }
+  .ff-note { font-size: 0.68rem; color: var(--sl-color-gray-4); }
+
+  .ff-arrow { align-self: center; color: var(--accent); font-size: 0.9rem; }
+
+  @media (max-width: 34rem) {
+    .ff-arrow { transform: rotate(90deg); }
+  }
+</style>

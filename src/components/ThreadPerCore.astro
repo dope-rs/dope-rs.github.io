@@ -1,0 +1,159 @@
+---
+// Thread-per-core: the main thread runs the Launcher, which spawns one pinned thread
+// per core except the last — that last core (the leader) runs on the calling thread
+// itself. Each core is a complete, isolated runtime.
+const parts = ['Executor', 'io_uring driver', 'slab', 'wakers'];
+---
+
+<figure class="tpc">
+  <div class="tpc-main">
+    <span class="tpc-tag">main thread</span>
+    <code>Launcher::from_affinity().run(|ctx| …)</code>
+  </div>
+
+  <div class="tpc-cores">
+    <div class="tpc-core">
+      <span class="tpc-edge">spawns ↓</span>
+      <span class="tpc-cpu">CPU 0</span>
+      <span class="tpc-pin">pinned thread</span>
+      <ul>{parts.map((p) => <li>{p}</li>)}</ul>
+    </div>
+    <div class="tpc-core">
+      <span class="tpc-edge">spawns ↓</span>
+      <span class="tpc-cpu">CPU 1</span>
+      <span class="tpc-pin">pinned thread</span>
+      <ul>{parts.map((p) => <li>{p}</li>)}</ul>
+    </div>
+    <span class="tpc-ell" aria-hidden="true">⋯</span>
+    <div class="tpc-core lead">
+      <span class="tpc-edge becomes">this thread ↓</span>
+      <span class="tpc-cpu">CPU N</span>
+      <span class="tpc-pin">main thread · leader</span>
+      <ul>{parts.map((p) => <li>{p}</li>)}</ul>
+    </div>
+  </div>
+
+  <div class="tpc-bus">
+    <span class="tpc-bus-label">SO_REUSEPORT</span><span class="tpc-bus-port">:8080</span>
+  </div>
+</figure>
+
+<style>
+  .tpc {
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+  }
+
+  .tpc-main {
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto 1.4rem;
+    text-align: center;
+    position: relative;
+  }
+  .tpc-main::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -1rem;
+    width: 1px;
+    height: 0.8rem;
+    background: var(--sl-color-gray-5);
+  }
+  .tpc-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    color: var(--sl-color-gray-3);
+    margin-right: 0.55rem;
+  }
+  .tpc-main code {
+    font-size: 0.82rem;
+    color: var(--sl-color-white);
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .tpc-cores {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+  /* Starlight's content rhythm adds margin-top to adjacent blocks; cancel it
+     so the cards align. */
+  .tpc-cores > * { margin-top: 0; }
+
+  .tpc-core {
+    flex: 1 1 0;
+    min-width: 9rem;
+    max-width: 12rem;
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 10px;
+    padding: 0.85rem 0.9rem 0.95rem;
+    background: var(--sl-color-bg);
+  }
+  .tpc-core.lead {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--sl-color-hairline-shade));
+  }
+
+  .tpc-edge {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--sl-color-gray-4);
+    margin-bottom: 0.5rem;
+  }
+  .tpc-edge.becomes { color: var(--accent); font-weight: 600; }
+
+  .tpc-cpu {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border-radius: 5px;
+    padding: 0.1rem 0.45rem;
+  }
+  .tpc-pin {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--sl-color-gray-4);
+    margin: 0.45rem 0 0.55rem;
+  }
+  .tpc-core ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tpc-core li {
+    font-size: 0.78rem;
+    color: var(--sl-color-gray-2);
+    padding: 0.16rem 0;
+    border-top: 1px dashed var(--sl-color-hairline-shade);
+  }
+  .tpc-core li:first-child { border-top: none; }
+
+  .tpc-ell {
+    align-self: center;
+    color: var(--sl-color-gray-4);
+    letter-spacing: 0.1em;
+    padding: 0 0.1rem;
+  }
+
+  .tpc-bus {
+    margin-top: 0.9rem;
+    border: 1px solid var(--sl-color-hairline-shade);
+    border-radius: 8px;
+    background: var(--sl-color-gray-7);
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+  .tpc-bus-label { color: var(--accent); font-weight: 600; }
+  .tpc-bus-port { color: var(--sl-color-gray-3); margin-left: 0.4rem; }
+
+  @media (max-width: 30rem) {
+    .tpc-ell { display: none; }
+  }
+</style>

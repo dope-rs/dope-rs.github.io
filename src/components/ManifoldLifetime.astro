@@ -1,0 +1,171 @@
+---
+// A manifold is mounted once and lives the whole executor span. Full-width bars
+// say nothing on their own, so the figure draws the contrast the prose makes:
+// the conventional "a task per request" model (short, transient, staggered bars)
+// vs manifolds (one bar each, spanning mount → exit). Now "alive the whole span"
+// reads against something. Small ticks on each bar are kernel completions feeding in.
+const manifolds = ['Listener', 'Connector (db)', 'Timer'];
+// transient per-request tasks: staggered along the timeline, born then dropped
+const tasks = [
+  { left: '1%', w: '12%' },
+  { left: '19%', w: '9%' },
+  { left: '33%', w: '14%' },
+  { left: '54%', w: '10%' },
+  { left: '71%', w: '13%' },
+  { left: '89%', w: '9%' },
+];
+---
+
+<figure class="ml">
+  <div class="ml-rows">
+    <!-- the executor's whole lifetime is the x-axis -->
+    <div class="ml-row">
+      <span class="ml-label muted">core executor</span>
+      <span class="ml-axis">
+        <span class="ml-end">mount</span>
+        <span class="ml-line"></span>
+        <span class="ml-end">exit</span>
+      </span>
+    </div>
+
+    <!-- conventional model: a task spawned per request, then dropped -->
+    <div class="ml-row">
+      <span class="ml-label muted">task / request</span>
+      <span class="ml-track">
+        {tasks.map((t) => (
+          <span class="ml-task" style={`left:${t.left};width:${t.w}`} />
+        ))}
+      </span>
+    </div>
+
+    <div class="ml-vs"><span>dope · mounted once</span></div>
+
+    <!-- manifolds: one each, alive the entire span; ticks are kernel completions -->
+    {manifolds.map((m) => (
+      <div class="ml-row">
+        <span class="ml-label">{m}</span>
+        <span class="ml-bar"><i></i><i></i><i></i><i></i></span>
+      </div>
+    ))}
+  </div>
+</figure>
+
+<style>
+  .ml {
+    margin: 1.6rem 0;
+    font-family: var(--font-mono);
+  }
+
+  .ml-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .ml-rows > * { margin-top: 0; }
+
+  .ml-row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .ml-label {
+    text-align: right;
+    font-size: 0.78rem;
+    color: var(--sl-color-gray-2);
+    white-space: nowrap;
+  }
+  .ml-label.muted, .muted { color: var(--sl-color-gray-4); }
+
+  /* the time axis: mount ──────► exit, the reference frame */
+  .ml-axis { display: flex; align-items: center; gap: 0.5rem; }
+  .ml-end {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sl-color-gray-4);
+  }
+  .ml-line {
+    position: relative;
+    flex: 1;
+    height: 0;
+    border-top: 1px dashed var(--sl-color-gray-5);
+  }
+  .ml-line::before, .ml-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sl-color-gray-4);
+    transform: translateY(-50%);
+  }
+  .ml-line::before { left: 0; }
+  .ml-line::after { right: 0; }
+
+  /* transient per-request tasks — short, staggered, here then gone */
+  .ml-track { position: relative; height: 1.5rem; }
+  .ml-task {
+    position: absolute;
+    top: 0;
+    height: 1.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--sl-color-gray-5);
+    background: repeating-linear-gradient(-45deg,
+      var(--sl-color-gray-7) 0 5px, var(--sl-color-bg) 5px 10px);
+  }
+
+  /* the contrast divider */
+  .ml-vs {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0.7rem;
+    align-items: center;
+    margin: 0.15rem 0;
+  }
+  .ml-vs::before { content: ""; }
+  .ml-vs span {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    position: relative;
+  }
+  .ml-vs span::after {
+    content: "";
+    position: absolute;
+    left: 8.5rem;
+    right: 0;
+    top: 50%;
+    border-top: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  /* a manifold: one bar, alive across the whole span */
+  .ml-bar {
+    position: relative;
+    height: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--sl-color-hairline-shade));
+    background: color-mix(in srgb, var(--accent) 12%, var(--sl-color-bg));
+  }
+  /* kernel completions landing over time */
+  .ml-bar i {
+    position: absolute;
+    top: 50%;
+    width: 3px;
+    height: 0.72rem;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--accent) 55%, transparent);
+    transform: translateY(-50%);
+  }
+  .ml-bar i:nth-child(1) { left: 17%; }
+  .ml-bar i:nth-child(2) { left: 39%; }
+  .ml-bar i:nth-child(3) { left: 62%; }
+  .ml-bar i:nth-child(4) { left: 84%; }
+
+  @media (max-width: 34rem) {
+    .ml-row, .ml-vs { grid-template-columns: 5.5rem 1fr; }
+    .ml-vs span::after { left: 6rem; }
+  }
+</style>

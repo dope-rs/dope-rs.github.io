@@ -1,0 +1,71 @@
+---
+title: tent — the template engine
+description: A compile-time, indentation-based HTML template engine — locals captured, control flow inline, lowered to bytes.
+sidebar:
+  order: 4
+---
+
+import TentPipeline from '../../../components/TentPipeline.astro';
+
+> **tent** — the template engine for dope.
+
+Indentation-based HTML (think Pug / Slim), compiled at build time into Rust that
+writes bytes into a buffer. Nesting is whitespace, `.x` is a class, `{expr}`
+interpolates an escaped Rust value, `!{expr}` a raw one, and a `-` line is plain Rust
+control flow.
+
+<TentPipeline />
+
+## A template
+
+```text
+html
+    head
+        meta charset="utf-8"
+        title "Field Notes"
+        style !{css}
+        !{svg_defs}
+    body
+        header
+            p.title "Field Notes"
+        div.articles
+            div.waves
+                !{wave_svg}
+            - for entry in &articles
+                article
+                    h2
+                        {entry.title}
+                        span class="created-at" {entry.created_at}
+                    - for para in &entry.paragraphs
+                        p {para}
+            footer
+                p "© 2026 Field Notes."
+```
+
+## The call site
+
+`load_html_body!` captures the locals the template names — `css`, `svg_defs`,
+`wave_svg`, `articles` — from scope, and expands to code that fills an `o3` buffer.
+Render once at boot, hand it out by pointer:
+
+```rust
+fn render_index() -> &'static [u8] {
+    let css      = include_str!("../resources/style.css");
+    let svg_defs = include_str!("../resources/icons.svg");
+    let wave_svg = Wave::svg();
+    let articles = Article::all();   // Vec<Article>, from YAML
+
+    let body = tent::load_html_body!("resources/index.tent");
+
+    let mut resp = sark::http::Response::ok();
+    resp.set_body(body.finish());           // the o3 buffer, zero-copy
+    Box::leak(resp.into_body_bytes().to_vec().into_boxed_slice())
+}
+```
+
+- **Compiled, not interpreted.** Static fragments are baked in; a bad field is a build
+  error, not a blank in the page.
+- **Zero-copy out.** `body.finish()` is the same buffer a [sark](/stack/sark/)
+  response sends — no intermediate `String`.
+- **Per-core.** Rendering is a synchronous call inside a [Fiber](/concepts/fiber/); it
+  never reaches for cross-thread synchronization.

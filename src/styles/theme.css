@@ -1,0 +1,708 @@
+/* ───────────────────────────────────────────────────────────────
+   dope-rs — minimal white, typography-first, academic.
+   One ink-red accent (狂). Everything else is paper and ink.
+   ─────────────────────────────────────────────────────────────── */
+
+:root {
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua',
+    Georgia, 'Times New Roman', serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', 'Fira Code', Menlo,
+    Consolas, monospace;
+
+  --ink: #16110f;
+  --paper: #fbfaf8;
+  --accent: #b21f24;
+}
+
+/* ── Light theme: paper & ink ─────────────────────────────────── */
+:root[data-theme='light'] {
+  --sl-color-accent-low: #f3dcdc;
+  --sl-color-accent: #b21f24;
+  --sl-color-accent-high: #7c1418;
+
+  --sl-color-white: #16110f;
+  --sl-color-gray-1: #2a2421;
+  --sl-color-gray-2: #4a423d;
+  --sl-color-gray-3: #6f655d;
+  --sl-color-gray-4: #938880;
+  --sl-color-gray-5: #c9c0b7;
+  --sl-color-gray-6: #ece6df;
+  --sl-color-gray-7: #f4f0ea;
+  --sl-color-black: #fbfaf8;
+
+  --sl-color-bg: #fbfaf8;
+  --sl-color-bg-nav: #fbfaf8;
+  --sl-color-bg-sidebar: #fbfaf8;
+  --sl-color-text-accent: #b21f24;
+  --sl-color-hairline-shade: #ece6df;
+}
+
+/* ── Dark theme: kept restrained, same grammar ────────────────── */
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #46100f;
+  --sl-color-accent: #e8534f;
+  --sl-color-accent-high: #f6c9c5;
+
+  --sl-color-white: #f4efe9;
+  --sl-color-gray-1: #e6e0d8;
+  --sl-color-gray-2: #cfc7bd;
+  --sl-color-gray-3: #9a9088;
+  --sl-color-gray-4: #6c635b;
+  --sl-color-gray-5: #443e39;
+  --sl-color-gray-6: #2a2522;
+  --sl-color-gray-7: #1f1b18;
+  --sl-color-black: #16110f;
+
+  --sl-color-bg: #16110f;
+  --sl-color-text-accent: #e8534f;
+}
+
+/* ── Global type ──────────────────────────────────────────────── */
+:root {
+  --sl-font: var(--font-sans);
+  --sl-font-mono: var(--font-mono);
+  --sl-line-height: 1.7;
+  --sl-text-code: 0.9em;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.content-panel h1,
+h1#_top {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.sl-markdown-content h1 { font-size: 2.3rem; line-height: 1.12; }
+.sl-markdown-content h2 { font-size: 1.55rem; margin-top: 2.4em; }
+
+/* a quiet rule under every h2, scholarly */
+.sl-markdown-content h2 {
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+  padding-bottom: 0.3em;
+}
+
+/* Blockquotes read as pull-quotes / aphorisms */
+.sl-markdown-content blockquote {
+  border-inline-start: 2px solid var(--accent);
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--sl-color-white);
+  padding-inline-start: 1.1em;
+}
+:root[data-theme='light'] .sl-markdown-content blockquote { color: var(--ink); }
+
+/* Inline code, restrained */
+.sl-markdown-content :not(pre) > code {
+  background: var(--sl-color-gray-7);
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+/* Site title in header → mono, lowercase, tight */
+.site-title span:last-child,
+a.site-title {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Landing page (splash)
+   ─────────────────────────────────────────────────────────────── */
+
+/* Hide the duplicate page-title band on the splash home — the wordmark already
+   lives in the header, and the 狂 seal is the visual anchor. The title sits in
+   its own content-panel, separate from the one holding .landing. */
+main:has(.landing) > .content-panel:first-of-type {
+  display: none;
+}
+
+.landing {
+  --measure: 64ch;
+  margin-inline: auto;
+  margin-top: -0.5rem;
+}
+
+.landing .lead {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* Hero */
+.hero-x {
+  text-align: center;
+  padding: 0.5rem 0 2rem;
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+}
+.hero-x .kanji-seal {
+  display: block;
+  width: clamp(74px, 12vw, 122px);
+  height: auto;
+  margin: 0 auto 0.5rem;
+  color: var(--sl-color-text-accent); /* seal glyph uses fill: currentColor */
+  user-select: none;
+}
+.hero-x h1 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 0 auto;
+  max-width: 18ch;
+}
+.hero-x h1 .strike {
+  color: var(--sl-color-gray-4);
+  font-weight: 400;
+  text-decoration: line-through;
+  text-decoration-thickness: 0.055em;
+  text-decoration-color: var(--accent);
+}
+.cta-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1.8rem;
+}
+.btn {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  padding: 0.6em 1.1em;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid var(--sl-color-gray-5);
+  color: var(--sl-color-white);
+  transition: all 0.15s ease;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--sl-color-accent-high); border-color: var(--sl-color-accent-high); color: #fff; }
+
+/* Thesis — "the same query, lowered": one read, lowered to its real call count */
+.thesis {
+  max-width: 60ch;
+  margin: 3.2rem auto;
+}
+.thesis .eyebrow { margin-bottom: 0.5rem; }
+.thesis > h2 {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.8rem;
+}
+.thesis > h2 code {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.lower {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+@media (max-width: 44rem) { .lower { grid-template-columns: 1fr; } }
+
+.lower .col {
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sl-color-bg);
+}
+
+.lower .col header {
+  padding: 0.85rem 1rem 0.7rem;
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+}
+.lower .col.heavy header { background: var(--sl-color-gray-7); }
+.lower .env {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-4);
+  margin-bottom: 0.35rem;
+}
+.lower .col header code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--sl-color-gray-2);
+  word-break: break-word;
+}
+.lower .thin header code { color: var(--accent); font-weight: 600; }
+
+.lower .trace {
+  list-style: none;
+  margin: 0;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.lower .trace li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  line-height: 1.25;
+  padding: 0.25rem 0.55rem;
+  /* height is a compressed (log-ish) view of cost; the number on the right is the
+     real per-call cycle estimate. --cyc is the height weight. */
+  min-height: calc(0.95rem + var(--cyc, 3) * 0.085rem);
+  border-radius: 5px;
+  border-left: 2px solid var(--sl-color-gray-5);
+  background: var(--sl-color-gray-7);
+  color: var(--sl-color-gray-2);
+}
+.lower .trace li .op { min-width: 0; }   /* wraps internally; never fights the count */
+.lower .trace li .cy {
+  flex: none;
+  font-size: 0.62rem;
+  color: var(--sl-color-gray-4);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.lower .thin .trace li .cy { color: var(--accent); }
+.lower .trace li i {
+  font-style: normal;
+  font-size: 0.64rem;
+  color: var(--sl-color-gray-4);
+  margin-left: 0.3rem;
+}
+/* work that happens on the SQLite worker thread — visually offset */
+.lower .trace li.away {
+  margin-left: 1rem;
+  border-left-style: dashed;
+}
+/* the channel hop across the thread boundary — tall (expensive), dashed crossing */
+.lower .trace li.cross {
+  border-left-style: dashed;
+  color: var(--sl-color-gray-3);
+}
+
+/* atomic — one of the two things dope refuses; flag it */
+.lower .trace li i.atomic {
+  font-weight: 700;
+  color: var(--accent);
+}
+.lower .trace li i.atomic::before { content: "⚛ "; }
+/* lock / mutex — the cardinal sin: a loud, filled red badge */
+.lower .trace li i.sin {
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  padding: 0.03rem 0.34rem;
+  border-radius: 3px;
+  letter-spacing: 0.01em;
+}
+.lower .trace li i.sin::before { content: "✗ "; }
+/* the offending lines get an accent edge so the sins pop out of the gray stack */
+.lower .trace li:has(i.sin),
+.lower .trace li:has(i.atomic) { border-left-color: var(--accent); }
+.lower .trace li:has(i.sin) { background: var(--sl-color-accent-low); }
+/* "ours" — the short stack, in the accent */
+.lower .thin .trace li {
+  border-left-color: var(--accent);
+  background: var(--sl-color-accent-low);
+  color: var(--sl-color-gray-1);
+}
+.lower .thin .trace li i { color: var(--sl-color-gray-3); }
+/* "ours" await — the fiber parks and the SAME core resumes it (no thread hop).
+   Dashed and unfilled: the suspension is a gap, not another call. */
+.lower .thin .trace li.park {
+  background: none;
+  border: 1px dashed var(--accent);
+  color: var(--accent);
+  font-size: 0.67rem;
+  padding: 0.3rem 0.55rem;
+}
+.lower .thin .trace li.park i { color: var(--sl-color-gray-4); }
+
+.lower .col footer {
+  padding: 0.7rem 1rem 0.85rem;
+  border-top: 1px solid var(--sl-color-hairline-shade);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--sl-color-gray-4);
+}
+.lower .col footer b {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--sl-color-gray-2);
+  margin-right: 0.25rem;
+}
+.lower .thin footer b { color: var(--accent); }
+
+/* ── Pipelining diagram — sequential vs Batch (cartel) ──────────────
+   Same paper-and-ink card as the thesis comparison: queries are cheap
+   CPU pills, the round-trip is the expensive network wait drawn as a
+   bar that flies out and back. Batch pays one wait, so its lane is
+   visibly shorter — the whole point, shown not told. */
+.pipe {
+  margin: 1.8rem 0;
+  padding: 0.3rem 1.1rem 1.1rem;
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 12px;
+  background: var(--sl-color-bg);
+  font-family: var(--font-mono);
+}
+.pipe-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--sl-color-hairline-shade);
+}
+.pipe-env {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-4);
+}
+.pipe-axis { font-size: 0.66rem; letter-spacing: 0.04em; color: var(--sl-color-gray-4); }
+
+.lane { display: flex; align-items: center; gap: 0.8rem; }
+.lane-tag {
+  flex: none;
+  width: 6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--sl-color-gray-3);
+  text-align: right;
+}
+.lane.batch .lane-tag { color: var(--sl-color-text-accent); font-weight: 600; }
+
+.wire { display: flex; align-items: center; gap: 0.32rem; }
+
+/* a query: a small, cheap pill — the CPU-side work */
+.q {
+  flex: none;
+  padding: 0.18rem 0.42rem;
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--sl-color-gray-2);
+  background: var(--sl-color-gray-7);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 5px;
+}
+.lane.batch .q {
+  color: var(--sl-color-gray-1);
+  background: var(--sl-color-accent-low);
+  border-color: var(--sl-color-accent-low);
+}
+
+/* a round-trip: the expensive network wait, striped like a wire in transit,
+   capped with an arrowhead — out to Postgres and back */
+.rt {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 1.2rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 999px;
+  background: repeating-linear-gradient(-45deg,
+    var(--sl-color-gray-6) 0 6px, var(--sl-color-bg) 6px 12px);
+}
+.rt i {
+  font-style: normal;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-4);
+}
+.rt::after {
+  content: "►";
+  position: absolute;
+  right: -0.6rem;
+  font-size: 0.6rem;
+  color: var(--sl-color-gray-4);
+}
+/* the Batch round-trip is the accent: one wait carries every query */
+.lane.batch .rt {
+  border-color: var(--sl-color-text-accent);
+  background: repeating-linear-gradient(-45deg,
+    var(--sl-color-accent-low) 0 6px, var(--sl-color-bg) 6px 12px);
+}
+.lane.batch .rt i,
+.lane.batch .rt::after { color: var(--sl-color-text-accent); }
+
+.lane-cost {
+  margin: 0.35rem 0 1.1rem calc(6rem + 0.8rem);
+  font-size: 0.66rem;
+  color: var(--sl-color-gray-4);
+}
+.lane-cost b { color: var(--sl-color-gray-2); font-weight: 600; }
+.lane-cost.batch { margin-bottom: 0; }
+.lane-cost.batch b { color: var(--sl-color-text-accent); }
+
+@media (max-width: 38rem) {
+  .lane { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+  .lane-tag { width: auto; text-align: left; }
+  .wire { flex-wrap: wrap; }
+  .lane-cost { margin-left: 0; }
+}
+
+/* ── Shared-nothing per-core diagram (sark) ────────────────────────
+   SO_REUSEPORT is a kernel spine on the left; each core hangs off it as
+   its own lane. The Fiber is dope's unit of work, so it's the accent.
+   State is a per-core chip — and the last lane's chip is the punchline:
+   nothing shared. Same card + tokens as the pipelining figure. */
+.cores {
+  display: flex;
+  align-items: stretch;
+  margin: 1.8rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 12px;
+  background: var(--sl-color-bg);
+  font-family: var(--font-mono);
+}
+/* the kernel spine: a vertical accent rail the lanes branch from */
+.cores-rail {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 1rem;
+  margin-right: 1rem;
+  border-right: 2px solid var(--sl-color-text-accent);
+}
+.rail-name {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--sl-color-text-accent);
+}
+.cores-lanes {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.core {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-left: 1.1rem;
+}
+/* the ├─ tick branching off the spine into each lane */
+.core::before {
+  content: "";
+  position: absolute;
+  left: -1rem;
+  top: 50%;
+  width: 2rem;
+  border-top: 2px solid var(--sl-color-gray-5);
+}
+.core-tag {
+  flex: none;
+  width: 3.4rem;
+  font-size: 0.7rem;
+  color: var(--sl-color-gray-3);
+}
+.flow {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+/* a pipeline stage */
+.st {
+  position: relative;
+  flex: none;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--sl-color-gray-2);
+  background: var(--sl-color-gray-7);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 5px;
+}
+/* ► between stages, drawn in the gap */
+.flow .st + .st::before {
+  content: "►";
+  position: absolute;
+  left: -0.72rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.58rem;
+  color: var(--sl-color-gray-4);
+}
+/* the Fiber — dope's unit of work — is the accent */
+.st.hot {
+  color: #fff;
+  background: var(--sl-color-text-accent);
+  border-color: var(--sl-color-text-accent);
+}
+.st.more { border-style: dashed; background: none; color: var(--sl-color-gray-4); }
+/* per-core state — owned, never crossing a lane */
+.state {
+  flex: none;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.64rem;
+  white-space: nowrap;
+  color: var(--sl-color-gray-1);
+  background: var(--sl-color-accent-low);
+  border-radius: 5px;
+}
+.state.none {
+  color: var(--sl-color-text-accent);
+  background: none;
+  border: 1px dashed var(--sl-color-text-accent);
+  font-weight: 600;
+}
+.state.none::before { content: "\2298\00a0"; }   /* ⊘ */
+
+@media (max-width: 40rem) {
+  .rail-name { letter-spacing: 0.1em; }
+  .core { flex-wrap: wrap; gap: 0.4rem 0.6rem; }
+  .flow { flex-basis: 100%; order: 3; }
+  .state { order: 2; }
+}
+
+/* Section heading, centered eyebrow */
+.section {
+  margin: 4rem auto;
+  max-width: 70ch;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-4);
+  text-align: center;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.section > h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.9rem;
+  text-align: center;
+  margin: 0 0 2rem;
+  letter-spacing: -0.01em;
+}
+
+/* Four traits */
+.laws {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--sl-color-hairline-shade);
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 10px;
+  overflow: hidden;
+}
+@media (max-width: 640px) { .laws { grid-template-columns: 1fr; } }
+.law {
+  background: var(--sl-color-bg);
+  padding: 1.6rem 1.5rem;
+}
+.law .n {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+.law h3 {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.4rem 0 0.5rem;
+}
+.law p {
+  margin: 0;
+  color: var(--sl-color-gray-2);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* The stack — vertical layers */
+.stack {
+  max-width: 52ch;
+  margin: 0 auto;
+}
+.layer {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--sl-color-hairline-shade);
+  border-radius: 10px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 0.5rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  position: relative;
+}
+.layer:hover { border-color: var(--accent); transform: translateX(3px); }
+.layer .head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+.layer .name {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--sl-color-white);
+}
+.layer .role {
+  font-size: 0.82rem;
+  color: var(--sl-color-gray-3);
+  font-family: var(--font-mono);
+}
+.layer p { margin: 0.5rem 0 0; color: var(--sl-color-gray-2); font-size: 0.95rem; }
+.layer .arrow { position: absolute; right: 1.4rem; top: 1.4rem; color: var(--sl-color-gray-4); }
+
+.closing {
+  text-align: center;
+  margin: 5rem auto 2rem;
+  max-width: 52ch;
+}
+.closing .note {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--sl-color-gray-4);
+  margin-top: 2rem;
+}
+
